@@ -10,13 +10,12 @@ const CustomerPage = () => {
 
     const onSubmit = (customer: Customer) => {
         if (editCustomer !== null) {
-            // Edit existing
             setCustomers(prevState =>
                 prevState.map(orginalCustomer => (orginalCustomer.id === customer.id ? customer : orginalCustomer))
             );
         } else {
-            // Add new (ensure unique ID)
-            const newId = Date.now(); // or use uuid
+
+            const newId = Date.now();
             setCustomers(prev => [...prev, { ...customer, id: newId }]);
         }
         setIsDialogOpen(false);
@@ -24,7 +23,7 @@ const CustomerPage = () => {
     };
 
     const onAddCustomerClicked = () => {
-        setEditCustomer(null); // make sure form is blank
+        setEditCustomer(null);
         setIsDialogOpen(true);
     };
 
