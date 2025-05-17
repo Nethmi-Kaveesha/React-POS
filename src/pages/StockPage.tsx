@@ -1,5 +1,5 @@
 const stock = () =>{
-    return <>Order Page</>
+    return <>Stock Page</>
 }
 
 export default stock;

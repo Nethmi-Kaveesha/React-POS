@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import type { Customer } from "../types/Customer.ts";
 
 export type CustomerFormData = {
     name: string;
@@ -7,9 +8,9 @@ export type CustomerFormData = {
 };
 
 type CustomerFormProps = {
-    initialData?: CustomerFormData;
     onSubmit: (data: { name: string; dateOfBirth: string; address: string; id: number }) => void;
     onCancel: () => void;
+    initialValues?: Customer;
 };
 
 const validate = (form: CustomerFormData) => {
@@ -24,10 +25,17 @@ function initialForm(): CustomerFormData {
     return { name: "", address: "", dateOfBirth: "" };
 }
 
-const CustomerForm: React.FC<CustomerFormProps> = ({ initialData, onSubmit, onCancel }) => {
-    const [form, setForm] = useState<CustomerFormData>(
-        initialData || { name: "", address: "", dateOfBirth: "" }
+const CustomerForm: React.FC<CustomerFormProps> = ({ onSubmit, onCancel, initialValues }) => {
+    const [form, setForm] = useState<CustomerFormData>(() =>
+        initialValues
+            ? {
+                name: initialValues.name,
+                address: initialValues.address,
+                dateOfBirth: initialValues.dateOfBirth,
+            }
+            : initialForm()
     );
+
     const [errors, setErrors] = useState<Partial<CustomerFormData>>({});
     const [submitted, setSubmitted] = useState(false);
 
@@ -43,25 +51,22 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ initialData, onSubmit, onCa
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length === 0) {
             const customer = {
-                id: Math.floor(Math.random() * 100000),
+                id: initialValues? initialValues.id : Date.now(),
                 ...form,
             };
             console.log("customer:", customer);
-            onSubmit({
-                name: form.name,
-                dateOfBirth: form.dateOfBirth,
-                address: form.address,
-                id: Date.now()
-            });
-
-            setForm(initialForm);
+            onSubmit(customer);
+            setForm(initialForm());
             setErrors({});
             alert("Customer added successfully!");
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow-lg space-y-6">
+        <form
+            onSubmit={handleSubmit}
+            className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow-lg space-y-6"
+        >
             <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Name</label>
                 <input
